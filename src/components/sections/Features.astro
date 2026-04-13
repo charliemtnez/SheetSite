@@ -1,0 +1,26 @@
+---
+import { parseNumberedItems } from "@data/sheets";
+
+interface Props {
+  title?: string;
+  [key: string]: string | undefined;
+}
+
+const props = Astro.props;
+const title = props.title || "";
+const items = parseNumberedItems(props as Record<string, string>);
+---
+
+<section class="py-12 md:py-16 lg:py-20">
+  <div class="mx-auto max-w-7xl px-6">
+    {title && <h2 class="mb-10 text-center text-2xl font-semibold text-primary md:text-3xl">{title}</h2>}
+    <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
+      {items.map((item) => (
+        <article class="rounded-lg border border-mist bg-white p-6 shadow-sm">
+          <h3 class="text-lg font-semibold text-primary">{item.title}</h3>
+          {item.desc && <p class="mt-2 text-charcoal/80">{item.desc}</p>}
+        </article>
+      ))}
+    </div>
+  </div>
+</section>

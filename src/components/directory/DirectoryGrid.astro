@@ -1,0 +1,40 @@
+---
+import DirectoryCard from "./DirectoryCard.astro";
+import DirectoryFilter from "./DirectoryFilter.astro";
+import type { DirectoryConfig } from "@data/types";
+
+interface Props {
+  config: DirectoryConfig;
+}
+
+const { config } = Astro.props;
+const { title, filter_by, items } = config;
+
+const filterValues = filter_by
+  ? [...new Set(items.map((item) => (item as Record<string, unknown>)[filter_by] as string).filter(Boolean))]
+  : [];
+---
+
+<section class="py-12 md:py-16 lg:py-20">
+  <div class="mx-auto max-w-7xl px-6">
+    <h2 class="mb-8 text-center text-2xl font-semibold text-primary md:text-3xl">{title}</h2>
+
+    {filter_by && filterValues.length > 0 && (
+      <DirectoryFilter fieldName={filter_by} values={filterValues} />
+    )}
+
+    <div
+      id="directory-grid"
+      class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+      aria-live="polite"
+    >
+      {items.map((item) => (
+        <DirectoryCard item={item} filterField={filter_by} />
+      ))}
+    </div>
+
+    <p id="directory-count" class="sr-only" aria-live="polite"></p>
+  </div>
+</section>
+
+<script src="/src/assets/js/directory-filter.js"></script>

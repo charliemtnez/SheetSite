@@ -1,0 +1,22 @@
+---
+import Layout from "@layouts/Layout.astro";
+import { getSiteConfig, getNavLinks } from "@data/sheets";
+
+const config = await getSiteConfig();
+const navLinks = await getNavLinks();
+---
+
+<Layout config={config} navLinks={navLinks} title="Thank You" description="Thank you for contacting us.">
+  <section class="flex min-h-[400px] items-center justify-center py-20">
+    <div class="text-center">
+      <h1 class="text-3xl font-semibold text-primary md:text-4xl">Thank You</h1>
+      <p class="mt-4 text-lg text-charcoal">We received your message and will be in touch soon.</p>
+      <a
+        href="/"
+        class="btn-primary mt-8"
+      >
+        Return Home
+      </a>
+    </div>
+  </section>
+</Layout>

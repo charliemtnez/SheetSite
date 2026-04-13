@@ -1,0 +1,42 @@
+---
+import SkipLink from "@components/SkipLink.astro";
+import Navigation from "@components/Navigation.astro";
+import Footer from "@components/Footer.astro";
+
+import "@fontsource/eb-garamond/400.css";
+import "@fontsource/eb-garamond/600.css";
+import "@fontsource/open-sans/400.css";
+import "@fontsource/open-sans/700.css";
+
+import type { SiteConfig, NavLink } from "@data/types";
+
+interface Props {
+  config: SiteConfig;
+  navLinks: NavLink[];
+  title: string;
+  description: string;
+}
+
+const { config, navLinks, title, description } = Astro.props;
+const currentPath = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title} | {config.site_name}</title>
+  </head>
+  <body class="flex min-h-screen flex-col">
+    <SkipLink />
+    <Navigation links={navLinks} logoUrl={config.nav_logo_url} currentPath={currentPath} />
+    <main id="main-content" class="flex-1">
+      <slot />
+    </main>
+    <Footer text={config.footer_text} />
+  </body>
+</html>

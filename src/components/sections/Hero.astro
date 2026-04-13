@@ -1,0 +1,37 @@
+---
+interface Props {
+  title: string;
+  subtitle?: string;
+  cta_text?: string;
+  cta_link?: string;
+  bg_image?: string;
+  [key: string]: string | undefined;
+}
+
+const { title, subtitle, cta_text, cta_link, bg_image } = Astro.props;
+const hasBgImage = bg_image && bg_image.trim() !== "";
+---
+
+<section
+  class="relative flex min-h-[400px] items-center justify-center py-20 text-white"
+  style={hasBgImage ? `background-image: url('${bg_image}'); background-size: cover; background-position: center;` : undefined}
+>
+  {hasBgImage ? (
+    <div class="absolute inset-0 bg-black/50" aria-hidden="true"></div>
+  ) : (
+    <div class="absolute inset-0 bg-primary" aria-hidden="true"></div>
+  )}
+
+  <div class="relative z-10 mx-auto max-w-4xl px-6 text-center">
+    <h1 class="text-3xl font-semibold leading-tight md:text-4xl lg:text-5xl">{title}</h1>
+    {subtitle && <p class="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-white/90 md:text-xl">{subtitle}</p>}
+    {cta_text && cta_link && (
+      <a
+        href={cta_link}
+        class="btn-primary mt-8"
+      >
+        {cta_text}
+      </a>
+    )}
+  </div>
+</section>

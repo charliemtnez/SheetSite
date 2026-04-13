@@ -1,0 +1,42 @@
+---
+import Layout from "@layouts/Layout.astro";
+import SectionRenderer from "@components/SectionRenderer.astro";
+import DirectoryGrid from "@components/directory/DirectoryGrid.astro";
+import {
+  getSiteConfig,
+  getNavLinks,
+  getPages,
+  getPageSections,
+  parseDirectoryConfig,
+} from "@data/sheets";
+import type { PageEntry } from "@data/types";
+
+export async function getStaticPaths() {
+  const pages = await getPages();
+  return pages.map((page) => ({
+    params: { slug: page.slug === "home" ? undefined : page.slug },
+    props: { page },
+  }));
+}
+
+interface Props {
+  page: PageEntry;
+}
+
+const { page } = Astro.props;
+const config = await getSiteConfig();
+const navLinks = await getNavLinks();
+const sections = await getPageSections(page.slug);
+---
+
+<Layout config={config} navLinks={navLinks} title={page.title} description={page.meta_description}>
+  {page.template === "landing" && (
+    sections.map((section) => <SectionRenderer section={section} />)
+  )}
+  {page.template === "directory" && (
+    <>
+      {sections.filter((s) => s.type === "hero").map((s) => <SectionRenderer section={s} />)}
+      <DirectoryGrid config={parseDirectoryConfig(sections)} />
+    </>
+  )}
+</Layout>

@@ -1,0 +1,13 @@
+---
+interface Props {
+  text: string;
+}
+
+const { text } = Astro.props;
+---
+
+<footer class="bg-primary py-8 text-center text-sm text-white/80">
+  <div class="mx-auto max-w-7xl px-6">
+    <p set:html={text} />
+  </div>
+</footer>

@@ -1,0 +1,148 @@
+---
+import type { NavLink } from "@data/types";
+
+interface Props {
+  links: NavLink[];
+  logoUrl?: string;
+  currentPath: string;
+}
+
+const { links, logoUrl, currentPath } = Astro.props;
+---
+
+<header class="bg-primary text-white">
+  <nav aria-label="Main navigation" class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+    <a href="/" class="text-xl font-serif font-semibold text-white hover:text-accent transition-colors">
+      {logoUrl ? (
+        <img src={logoUrl} alt="Home" class="h-8" />
+      ) : (
+        "SheetSite"
+      )}
+    </a>
+
+    {/* Desktop nav */}
+    <ul class="hidden lg:flex lg:items-center lg:gap-6">
+      {links.map((link) => (
+        <li>
+          <a
+            href={link.href}
+            class:list={[
+              "text-sm font-medium transition-colors hover:text-accent",
+              currentPath === link.href || (link.href !== "/" && currentPath.startsWith(link.href))
+                ? "text-accent"
+                : "text-white",
+            ]}
+            aria-current={currentPath === link.href ? "page" : undefined}
+          >
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    {/* Mobile hamburger */}
+    <button
+      type="button"
+      id="mobile-menu-toggle"
+      class="lg:hidden p-2 text-white hover:text-accent transition-colors"
+      aria-expanded="false"
+      aria-controls="mobile-menu"
+      aria-label="Open menu"
+    >
+      <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+  </nav>
+
+  {/* Mobile menu panel */}
+  <div id="mobile-menu" class="hidden lg:hidden" role="dialog" aria-label="Mobile navigation">
+    <ul class="border-t border-white/20 px-6 py-4 space-y-2">
+      {links.map((link) => (
+        <li>
+          <a
+            href={link.href}
+            class:list={[
+              "block py-2 text-base font-medium transition-colors hover:text-accent",
+              currentPath === link.href ? "text-accent" : "text-white",
+            ]}
+            aria-current={currentPath === link.href ? "page" : undefined}
+          >
+            {link.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+    <button
+      type="button"
+      id="mobile-menu-close"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:right-4 focus:rounded focus:bg-white focus:px-3 focus:py-1 focus:text-primary"
+    >
+      Close menu
+    </button>
+  </div>
+</header>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var toggle = document.getElementById("mobile-menu-toggle");
+    var menu = document.getElementById("mobile-menu");
+    var closeBtn = document.getElementById("mobile-menu-close");
+    if (!toggle || !menu) return;
+
+    var focusableSelector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+    function openMenu() {
+      menu.classList.remove("hidden");
+      toggle.setAttribute("aria-expanded", "true");
+      toggle.setAttribute("aria-label", "Close menu");
+      var firstLink = menu.querySelector("a");
+      if (firstLink) firstLink.focus();
+    }
+
+    function closeMenu() {
+      menu.classList.add("hidden");
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.setAttribute("aria-label", "Open menu");
+      toggle.focus();
+    }
+
+    toggle.addEventListener("click", function () {
+      var isOpen = toggle.getAttribute("aria-expanded") === "true";
+      if (isOpen) {
+        closeMenu();
+      } else {
+        openMenu();
+      }
+    });
+
+    if (closeBtn) {
+      closeBtn.addEventListener("click", closeMenu);
+    }
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key !== "Escape") return;
+      if (toggle.getAttribute("aria-expanded") !== "true") return;
+      closeMenu();
+    });
+
+    // Focus trap
+    menu.addEventListener("keydown", function (e) {
+      if (e.key !== "Tab") return;
+      var focusable = Array.from(menu.querySelectorAll(focusableSelector));
+      focusable.push(toggle);
+      if (focusable.length === 0) return;
+
+      var first = focusable[0];
+      var last = focusable[focusable.length - 1];
+
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    });
+  });
+</script>

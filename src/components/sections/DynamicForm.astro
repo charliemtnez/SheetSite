@@ -1,0 +1,88 @@
+---
+import { parseFormConfig } from "@data/sheets";
+import type { FormConfig } from "@data/types";
+
+interface Props {
+  [key: string]: string | undefined;
+}
+
+const formConfig: FormConfig = parseFormConfig(Astro.props as Record<string, string>);
+---
+
+<section class="bg-sand py-12 md:py-16 lg:py-20">
+  <div class="mx-auto max-w-2xl px-6">
+    <form
+      id="sheet-form"
+      data-webhook-url={formConfig.webhook_url}
+      data-success-redirect={formConfig.success_redirect}
+      novalidate
+      class="space-y-6"
+    >
+      {formConfig.fields.map((field) => (
+        <div class="flex flex-col gap-1.5">
+          <label for={field.name} class="text-sm font-medium text-charcoal lg:text-base">
+            {field.label}
+            {field.required && <span class="text-red-600" aria-hidden="true">*</span>}
+          </label>
+
+          {field.type === "textarea" ? (
+            <textarea
+              id={field.name}
+              name={field.name}
+              required={field.required}
+              aria-required={field.required ? "true" : undefined}
+              aria-describedby={`error-${field.name}`}
+              rows="4"
+              class="rounded border border-gray-300 p-3 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
+            />
+          ) : field.type === "select" ? (
+            <select
+              id={field.name}
+              name={field.name}
+              required={field.required}
+              aria-required={field.required ? "true" : undefined}
+              aria-describedby={`error-${field.name}`}
+              class="h-12 rounded border border-gray-300 p-3 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
+            >
+              <option value="">Select...</option>
+              {field.options?.split(",").map((opt) => (
+                <option value={opt.trim()}>{opt.trim()}</option>
+              ))}
+            </select>
+          ) : (
+            <input
+              type={field.type}
+              id={field.name}
+              name={field.name}
+              required={field.required}
+              aria-required={field.required ? "true" : undefined}
+              aria-describedby={`error-${field.name}`}
+              pattern={field.pattern || undefined}
+              class="h-12 rounded border border-gray-300 p-3 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
+            />
+          )}
+
+          <span
+            id={`error-${field.name}`}
+            class="hidden text-sm text-red-600"
+            role="alert"
+            data-validation-message={field.validation_message || ""}
+          />
+        </div>
+      ))}
+
+      <button
+        type="submit"
+        class="btn-primary w-full text-lg"
+      >
+        {formConfig.submit_text}
+      </button>
+
+      <div id="form-error" class="hidden rounded border border-red-200 bg-red-50 p-4 text-red-700" role="alert">
+        Something went wrong. Please try again.
+      </div>
+    </form>
+  </div>
+</section>
+
+<script src="/src/assets/js/form.js"></script>

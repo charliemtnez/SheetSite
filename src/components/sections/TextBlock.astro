@@ -1,0 +1,57 @@
+---
+interface Props {
+  title: string;
+  content: string;
+  [key: string]: string | undefined;
+}
+
+const { title, content } = Astro.props;
+
+/**
+ * Basic markdown-to-HTML for simple formatting.
+ * Supports: **bold**, *italic*, [links](url), unordered lists (- item).
+ */
+function renderSimpleMarkdown(text: string): string {
+  if (!text) return "";
+
+  let html = text
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>")
+    .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" class="text-primary underline hover:text-primary-light">$1</a>');
+
+  const lines = html.split("\n");
+  let result = "";
+  let inList = false;
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith("- ")) {
+      if (!inList) {
+        result += '<ul class="list-disc pl-6 space-y-1">';
+        inList = true;
+      }
+      result += `<li>${trimmed.slice(2)}</li>`;
+    } else {
+      if (inList) {
+        result += "</ul>";
+        inList = false;
+      }
+      if (trimmed) {
+        result += `<p>${trimmed}</p>`;
+      }
+    }
+  }
+  if (inList) result += "</ul>";
+
+  return result;
+}
+
+const renderedContent = renderSimpleMarkdown(content);
+---
+
+<section class="py-12 md:py-16 lg:py-20">
+  <div class="mx-auto max-w-3xl px-6">
+    {title && <h2 class="mb-6 text-2xl font-semibold text-primary md:text-3xl">{title}</h2>}
+    <div class="space-y-4 text-charcoal leading-relaxed" set:html={renderedContent} />
+  </div>
+</section>
